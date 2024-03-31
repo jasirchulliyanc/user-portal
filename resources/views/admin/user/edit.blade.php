@@ -16,7 +16,7 @@
                         <div class="row mb-3">
                             <div class="col-lg-6">
                                 <label for="inputText" class="col-sm-6 col-form-label">First Name</label>
-                                <input type="text" name="first_name" value="{{ $user->first_name }}" class="form-control">
+                                <input type="text" name="first_name" value="{{ $user->first_name }}" class="form-control" required>
                             </div>
                             <div class="col-lg-6">
                                 <label for="inputText" class="col-sm-6 col-form-label">Last Name</label>
@@ -30,14 +30,14 @@
                             </div>
                             <div class="col-lg-6">
                                 <label for="inputText" class="col-sm-6 col-form-label">Email</label>
-                                <input type="email" name="email" value="{{ $user->email }}" class="form-control">
+                                <input type="email" name="email" value="{{ $user->email }}" class="form-control" required>
                             </div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-lg-6">
                                 <label for="inputText" class="col-sm-6 col-form-label">Password</label>
                                 <div class="input-group">
-                                    <input type="password" name="password" value="{{ $user->password }}"  class="form-control">
+                                    <input type="password" name="password" value=""  class="form-control" required>
                                     <div class="input-group-append">
                                         <button type="button" class="btn btn-secondary"
                                             onclick="document.getElementsByName('password')[0].value = '';">

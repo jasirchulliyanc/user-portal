@@ -30,14 +30,18 @@
             </li>
         @endcan
 
-        @can('viewSystemAdmin')
+
             <li class="nav-item">
-                <a class="nav-link collapsed" href="pages-register.html">
-                    <i class="bi bi-card-list"></i>
-                    <span>Quit</span>
-                </a>
+                <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+      
+                    <button type="submit" class="nav-link collapsed"
+                        onclick="return confirm('Are you sure you want to logout?')">
+                        <i class="bi bi-box-arrow-right"></i> Sign Out
+                    </button>
+                </form>
             </li>
-        @endcan
+
 
     </ul>
 
