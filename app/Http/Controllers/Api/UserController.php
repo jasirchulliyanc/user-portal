@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Exception;
 
@@ -18,9 +19,16 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index($role)
     {
-        $users = User::paginate();
+        if(!$role == 'systemAdmin'){
+            $users = User::whereHas('roles', function ($query) use($role) {
+                $query->where('name', $role);
+            })->paginate();
+        } else{
+            $users = User::paginate();
+        }
+        
 
         try {
             return response()->json([
@@ -44,8 +52,43 @@ class UserController extends Controller
         }
 
     }
+    public function login(Request $request)
+    {
+        if(Auth::attempt(['email' => $request->email, 'password' => $request->password])){ 
+            $user = Auth::user(); 
+            $success['token'] =  $user->createToken('MyApp')->plainTextToken; 
 
+            return response()->json([
+                'success' => true,
+                'message' => 'User Listed  Successfully!',
+                'token' => $user->createToken('MyApp')->plainTextToken,
+                'data' => new UserResource($user),
+            ], 200);
+        } 
+        else{ 
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthoriesed!',
+            ], 500);
+        } 
+    }
+public function getUser($userId){
 
+    $users = User::select('first_name', 'last_name', 'email', 'position')->with('roles')->find($userId);
+
+        try {
+            return response()->json([
+                'success' => true,
+                'message' => 'User details Successfully!',
+                'data' => new UserResource($users),
+            ], 200);
+        } catch (Exception $exception) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong!',
+            ], 500);
+        }
+}
     /**
      * Store a newly created resource in storage.
      */
@@ -55,12 +98,13 @@ class UserController extends Controller
             DB::beginTransaction();
             $user = User::create($request->all());
             if ($user) {
-                // $user->assignRole($request->role);
+                $user->assignRole($request->role);
                 // $user->addMedia($request->image)
                 //     ->toMediaCollection('image');
                 DB::commit();
                 return response()->json([
                     'success' => true,
+                    'token' =>  $user->createToken('MyApp')->plainTextToken,
                     'message' => 'User created successfully!',
                     'data' => new UserResource($user),
                 ], 200);
